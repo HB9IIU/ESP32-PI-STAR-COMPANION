@@ -1,4 +1,4 @@
-# ESP32 Pi-Star Client
+# ESP32 Pi-Star Companion
 
 A real-time DMR hotspot monitor built on an **ESP32 CYD** (Cheap Yellow Display — 320×240 TFT with touchscreen).
 It connects via WebSocket to a lightweight Python server running on your **Pi-Star** hotspot and displays live DMR activity, last-heard stations, static talkgroups, and hotspot configuration — all on a colour touchscreen.
@@ -76,7 +76,6 @@ source
 #define WIFI_SSID "your-wifi-ssid"
 #define WIFI_PASS "your-wifi-password"
 #define WS_HOST   "192.168.x.x"   // local IP of your Pi-Star hotspot
-```
 
 > `secrets.h` is listed in `.gitignore` and will never be committed.
 
