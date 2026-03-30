@@ -9,4 +9,5 @@ configExisting/
 .DS_Store
 firmware/*
 !firmware/firmware.bin
+!firmware/app.jpeg
 firmware/export_merged_firmware.py
