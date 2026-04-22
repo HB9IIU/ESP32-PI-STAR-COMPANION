@@ -1,35 +1,149 @@
 # ESP32 Pi-Star Companion
 
-A real-time DMR hotspot monitor built on an **ESP32 CYD** (Cheap Yellow Display — 320×240 TFT with touchscreen).
-It connects via WebSocket to a lightweight Python server running on your **Pi-Star** hotspot and displays live DMR activity, last-heard stations, static talkgroups, and hotspot configuration — all on a colour touchscreen.
+A real-time DMR hotspot monitor built on an **ESP32 CYD**  
+(Cheap Yellow Display — 320×240 TFT with touchscreen).
+
+It connects via WebSocket to a lightweight Python server running on your **Pi-Star hotspot** and displays live DMR activity, last-heard stations, static talkgroups, and hotspot information — all on a standalone touchscreen device.
 
 ---
 
-## Features
+## 🚀 Features
 
-- **Live DMR activity** — callsign, name, flag, talkgroup, slot, BER, RSSI, duration
-- **Last heard list** — scrollable rows with flag, callsign, first name, talkgroup, and local time (HH:MM)
-- **Static talkgroups** — fetched automatically from the BrandMeister API with names
-- **Hotspot info page** — operator, QTH, RX/TX frequencies, colour code, power, network, service state
-- **Touch navigation** — tap anywhere to cycle through the 4 pages
-- **Country flags** — small pixel-art flags for every heard station
-- **Automatic reconnection** — WebSocket reconnects and ARP warmup on disconnect
-- **Clock sync** — UTC offset and time initialized from the Pi-Star snapshot
+- **Live DMR activity**
+  - Callsign, name, country flag, talkgroup, slot, BER, RSSI, duration
 
----
+- **Last heard list**
+  - Scrollable list with callsign, name, talkgroup and local time
 
-## Pages
+- **Static talkgroups**
+  - Automatically fetched from BrandMeister API (with names)
 
-| Page | Content |
-|------|---------|
-| 0 — Live | Real-time QSO: flag, callsign, name, location, TG, BER, RSSI, duration, recent-heard row |
-| 1 — Last Heard | Last 10 stations: flag, callsign, name, talkgroup, local time |
-| 2 — Static TGs | Static talkgroups configured on the hotspot with BrandMeister names |
-| 3 — Hotspot Info | Operator, QTH, RX/TX freq, colour code, power, DMR network, service state |
+- **Hotspot information page**
+  - Operator, QTH, RX/TX frequencies, colour code, power, network, service status
+
+- **Touch navigation**
+  - Tap anywhere to cycle through pages
+
+- **Clock synchronization**
+  - Time and UTC offset initialized from Pi-Star
 
 ---
 
-## Architecture
+## 📺 Display Pages
+
+| Page | Description |
+|------|------------|
+| **0 — Live** | Real-time QSO details + recent activity |
+| **1 — Last Heard** | Last 10 stations |
+| **2 — Static TGs** | Configured talkgroups with names |
+| **3 — Hotspot Info** | Device and network configuration |
+
+---
+
+## 🧠 Architecture
+
+```
+Pi-Star (Raspberry Pi)
+  └── monitor_mmdvm_ws.py
+        ├── Reads MMDVM logs (live DMR events)
+        ├── Parses hotspot configuration
+        ├── Loads DMR ID database
+        ├── Fetches BrandMeister talkgroups
+        └── Sends JSON via WebSocket (port 8765)
+
+ESP32 CYD
+  └── Firmware (PlatformIO)
+        ├── Connects to WebSocket server
+        ├── Parses JSON messages
+        └── Renders UI on TFT display
+```
+
+### JSON message types
+
+- `snapshot` → configuration + static data (on connect / change)
+- `live` → real-time DMR activity
+- `heard_summary` → last heard stations
+
+---
+
+## 🧰 Hardware
+
+| Component | Details |
+|----------|--------|
+| ESP32 | ESP32 Dev Module |
+| Display | 2.8" ILI9341 TFT (320×240) |
+| Touch | XPT2046 |
+| Hotspot | Raspberry Pi running Pi-Star |
+
+Target device:  
+**ESP32-2432S028 ("Cheap Yellow Display")**
+
+More info:  
+https://randomnerdtutorials.com/cheap-yellow-display-esp32-2432s028r/
+
+---
+
+## ⚙️ Installation
+
+### 1. Flash the ESP32
+
+- Use **PlatformIO (VS Code)**  
+  or  
+- Use the web flasher:  
+  👉 https://esp32projects.myshack.ch/
+
+---
+
+### 2. Install the Pi-Star WebSocket server
+
+SSH into your Pi-Star and run:
+
+```bash
+sudo wget -q -O /home/pi-star/monitor_mmdvm_ws.py \
+  https://raw.githubusercontent.com/HB9IIU/ESP32-PI-STAR-CLIENT/main/InstallationFiles/monitor_mmdvm_ws.py \
+  && sudo systemctl restart monitor_mmdvm_ws
+```
+
+---
+
+## 📦 Dependencies
+
+### ESP32 firmware
+
+- TFT_eSPI
+- XPT2046_Touchscreen
+- arduinoWebSockets
+- ArduinoJson v7
+- espressif32 @ 6.9.0
+
+---
+
+### Pi-Star server
+
+- Python 3.9+
+- `websockets==13.1`
+
+---
+
+## 🔧 Service Management (Pi-Star)
+
+```bash
+sudo systemctl status monitor_mmdvm_ws
+sudo systemctl restart monitor_mmdvm_ws
+sudo journalctl -u monitor_mmdvm_ws -f
+```
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+## 📡 Author
+
+HB9IIU
 
 ```raw
 Pi-Star (Raspberry Pi)
@@ -65,45 +179,19 @@ ESP32 CYD (Cheap Yellow Display)
 | Hotspot | Pi-Star on Raspberry Pi (Bullseye) |
 
 The project targets the **ESP32 CYD** (commonly sold as "ESP32-2432S028"), which integrates the display and touch controller on one board.
+more info here: https://randomnerdtutorials.com/cheap-yellow-display-esp32-2432s028r/
+
 
 ---
 
-## Installation
+## Installation & Configiuration
 
-### 1 — Pi-Star side (one-liner)
-metadata
-source
-#define WIFI_SSID "your-wifi-ssid"
-#define WIFI_PASS "your-wifi-password"
-#define WS_HOST   "192.168.x.x"   // local IP of your Pi-Star hotspot
+Step 1: use platformio in visual studio code to build & flash the cheap yello display, or flash directly with web flasher :https://esp32projects.myshack.ch/
 
-> `secrets.h` is listed in `.gitignore` and will never be committed.
 
-4. Build and flash:
+Step 2. open a console on your Hpotpsot running PiStar and paste this.
 
-```bash
-pio run --target upload
-```
 
-Each normal build also creates a merged image automatically here:
-
-```text
-firmware/firmware.bin
-```
-
-So after a plain:
-
-```bash
-pio run -e esp32dev
-```
-
-you will always have a fresh merged `firmware.bin` ready to use.
-
----
-
-## Updating the Python server
-
-After pulling changes, push to GitHub then update Pi-Star in one command:
 
 ```bash
 sudo wget -q -O /home/pi-star/monitor_mmdvm_ws.py \
