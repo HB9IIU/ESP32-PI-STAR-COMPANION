@@ -19,7 +19,7 @@ set -euo pipefail
 # ESP32-PI-STAR-CLIENT — Full installer
 # =========================================================
 
-GITHUB_RAW="https://raw.githubusercontent.com/HB9IIU/ESP32-PI-STAR-CLIENT/main/InstallationFiles"
+GITHUB_RAW="https://raw.githubusercontent.com/HB9IIU/ESP32-PI-STAR-COMPANION/main/InstallationFiles"
 PY_SCRIPT="/home/pi-star/monitor_mmdvm_ws.py"
 SERVICE_NAME="monitor_mmdvm_ws.service"
 SERVICE_INSTALLER_URL="${GITHUB_RAW}/install_mmdvm_ws_service.sh"

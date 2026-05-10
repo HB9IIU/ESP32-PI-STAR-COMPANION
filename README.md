@@ -42,7 +42,7 @@ It connects via WebSocket to a lightweight Python server running on your **Pi-St
 
 ## 🧠 Architecture
 
-```
+```raw
 Pi-Star (Raspberry Pi)
   └── monitor_mmdvm_ws.py
         ├── Reads MMDVM logs (live DMR events)
@@ -96,12 +96,18 @@ https://randomnerdtutorials.com/cheap-yellow-display-esp32-2432s028r/
 
 ### 2. Install the Pi-Star WebSocket server
 
-SSH into your Pi-Star and run:
+SSH into your Pi-Star and run the installer (handles everything: dependencies, firewall, systemd service):
 
 ```bash
-sudo wget -q -O /home/pi-star/monitor_mmdvm_ws.py \
-  https://raw.githubusercontent.com/HB9IIU/ESP32-PI-STAR-CLIENT/main/InstallationFiles/monitor_mmdvm_ws.py \
-  && sudo systemctl restart monitor_mmdvm_ws
+bash <(curl -fsSL https://raw.githubusercontent.com/HB9IIU/ESP32-PI-STAR-COMPANION/main/InstallationFiles/install_all.sh)
+```
+
+**Updating an existing installation** (script only, service already installed):
+
+```bash
+sudo wget -O /home/pi-star/monitor_mmdvm_ws.py \
+https://raw.githubusercontent.com/HB9IIU/ESP32-PI-STAR-COMPANION/main/InstallationFiles/monitor_mmdvm_ws.py \
+&& sudo systemctl restart monitor_mmdvm_ws
 ```
 
 ---
